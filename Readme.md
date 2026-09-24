@@ -70,7 +70,7 @@ Contains the main data preparation and augmentation procedures.
 
 ---
 
-## KSGAN Framework (Workflow)
+## KSGAN Framework
 
 The overall workflow of KSGAN is shown below.
 
