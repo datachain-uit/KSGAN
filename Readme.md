@@ -1,16 +1,22 @@
 # KSGAN: K-Means SMOTE and GAN for Data Augmentation of Minority Classes in Imbalanced Multiclass Prediction of MOOC Learning Outcomes
 
+## Overview
+
 This repository contains the source code and notebooks for the paper:
 
 > **KSGAN: K-Means SMOTE and GAN for Data Augmentation of Minority Classes in Imbalanced Multiclass Prediction of MOOC Learning Outcomes**
 
 The study addresses severe class imbalance in multiclass prediction of MOOC learning outcomes from sequential learning behavioral data.
 
-**KSGAN** is the proposed data augmentation method. It combines **K-Means SMOTE** and **GAN-based data refinement** in two stages. The first stage generates synthetic seed samples within local minority clusters. The second stage refines these seed samples toward the distribution of real minority samples.
+**KSGAN** combines **K-Means SMOTE** and **GAN-based data refinement** in two stages. The first stage generates synthetic seed samples within local minority clusters. The second stage refines these seed samples toward the distribution of real minority samples.
+
+The original **MOOCCubeX** dataset can be accessed at:
+
+https://github.com/THU-KEG/MOOCCubeX
 
 ---
 
-# 1. Repository Structure
+## Repository Structure
 
 The repository is organized into several folders for data processing, augmentation, and classification.
 
@@ -39,43 +45,32 @@ The repository is organized into several folders for data processing, augmentati
 
 ### `src/Baseline_model`
 
-Contains notebooks for training the hybrid deep learning models used for multiclass learning-outcome prediction.
+Contains notebooks for the hybrid deep learning models used for multiclass learning-outcome prediction.
 
-* `RNN/` — RNN-based hybrid model.
-* `GRU/` — GRU-based hybrid model.
-* `LSTM/` — LSTM-based hybrid model.
-* `BiLSTM/` — BiLSTM-based hybrid model.
-* `V0_mask_DL/` — earlier models using the missing-value mask representation.
+* `RNN/`: RNN-based hybrid model.
+* `GRU/`: GRU-based hybrid model.
+* `LSTM/`: LSTM-based hybrid model.
+* `BiLSTM/`: BiLSTM-based hybrid model.
+* `V0_mask_DL/`: Earlier models using the missing-value mask representation.
 
 ### `src/Data_processed`
 
-Contains processed datasets used as inputs for the experiments.
+Contains processed datasets used in the experiments.
 
 ### `src/Process`
 
 Contains the main data preparation and augmentation procedures.
 
-* `Augmentation/` — implementation of SMOTE, K-Means SMOTE, GAN, SMOTified-GAN, and the proposed KSGAN.
-* `Data_labeling/` — procedures for generating and assigning learning-outcome labels.
-* `Data_processing/` — preprocessing of MOOC user, course, video, exercise, comment, and reply data.
-* `Imputation/` — missing-value imputation procedures.
-* `Split_data/` — dataset splitting procedures.
-* `Time_Series/` — construction and processing of temporal behavioral features.
-
-The main augmentation implementations are:
-
-```text
-src/Process/Augmentation/
-├── gan.py
-├── ksgan.py
-├── k_means_smote.py
-├── smote.py
-└── smotified_gan.py
-```
+* `Augmentation/`: Implementations of SMOTE, K-Means SMOTE, GAN, SMOTified-GAN, and KSGAN.
+* `Data_labeling/`: Procedures for generating and assigning learning-outcome labels.
+* `Data_processing/`: Preprocessing of MOOC user, course, video, exercise, comment, and reply data.
+* `Imputation/`: Missing-value imputation procedures.
+* `Split_data/`: Dataset splitting procedures.
+* `Time_Series/`: Construction and processing of temporal behavioral features.
 
 ---
 
-# 2. KSGAN Framework (Workflow)
+## KSGAN Framework (Workflow)
 
 The overall workflow of KSGAN is shown below.
 
@@ -94,21 +89,7 @@ M_c \rightarrow
 \{M_{c,1},M_{c,2},\ldots,M_{c,K}\}.
 $$
 
-Unlike the original K-Means SMOTE, KSGAN performs clustering only on minority-class samples. This allows the clustering process to focus on the local structure of each minority class.
-
-SMOTE is then applied separately within each minority cluster:
-
-$$
-S_{c,k}=\mathrm{SMOTE}(M_{c,k}).
-$$
-
-The generated samples form the seed sample set:
-
-$$
-S_c=\bigcup_{k=1}^{K}S_{c,k}.
-$$
-
-These seed samples are generated from local minority neighborhoods rather than from the entire minority distribution.
+Unlike the original K-Means SMOTE, KSGAN performs clustering only on minority-class samples. SMOTE is then applied separately within each minority cluster to generate synthetic seed samples.
 
 ### Stage 2: GAN-based Data Refinement
 
@@ -120,14 +101,4 @@ $$
 \tilde{x}=G(s).
 $$
 
-The Generator acts as a **data refiner**, learning to adjust the seed samples toward the distribution of real minority samples in the corresponding cluster.
-
-The Discriminator distinguishes between real minority samples and generated samples.
-
-After training, the Generator produces the refined synthetic samples:
-
-$$
-\tilde{S}_{c,k}=G(S_{c,k}).
-$$
-
-The refined samples are transformed back to the original feature space and combined with the original training data to form the augmented dataset.
+The Generator acts as a data refiner, learning to adjust the seed samples toward the distribution of real minority samples.
