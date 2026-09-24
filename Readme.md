@@ -89,7 +89,21 @@ M_c \rightarrow
 \{M_{c,1},M_{c,2},\ldots,M_{c,K}\}.
 $$
 
-Unlike the original K-Means SMOTE, KSGAN performs clustering only on minority-class samples. SMOTE is then applied separately within each minority cluster to generate synthetic seed samples.
+Unlike the original K-Means SMOTE, KSGAN performs clustering only on minority-class samples. This allows the clustering process to focus on the local structure of each minority class.
+
+SMOTE is then applied separately within each minority cluster:
+
+$$
+S_{c,k}=\mathrm{SMOTE}(M_{c,k}).
+$$
+
+The generated samples form the seed sample set:
+
+$$
+S_c=\bigcup_{k=1}^{K}S_{c,k}.
+$$
+
+These seed samples are generated from local minority neighborhoods rather than from the entire minority distribution.
 
 ### Stage 2: GAN-based Data Refinement
 
@@ -101,4 +115,14 @@ $$
 \tilde{x}=G(s).
 $$
 
-The Generator acts as a data refiner, learning to adjust the seed samples toward the distribution of real minority samples.
+The Generator acts as a **data refiner**, learning to adjust the seed samples toward the distribution of real minority samples in the corresponding cluster.
+
+The Discriminator distinguishes between real minority samples and generated samples.
+
+After training, the Generator produces the refined synthetic samples:
+
+$$
+\tilde{S}_{c,k}=G(S_{c,k}).
+$$
+
+The refined samples are transformed back to the original feature space and combined with the original training data to form the augmented dataset.
